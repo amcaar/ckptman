@@ -3,37 +3,29 @@ Created on 01/07/2014
 
 Set of methods to connect with the IM and obtain the needed information.
 
+ckptman - Checkpointing Manager for BLCR and spot instances
+2014 - GRyCAP - Universitat Politecnica de Valencia
 @author: Amanda
 '''
 
-# imports de librerias de python
-import xmlrpclib # equivale a "import xmlrpc.client", pero han actualizado el nombre en las nuevas versiones de python
+import xmlrpclib 
 import logging
 import sys
 import time
 sys.path.append("/usr/local/im")
 
-# imports de ficheros propios
-from config import * # aqui estan definidas las variables
+from config import * 
 from IM.auth import Authentication
 from IM.radl import radl_parse
-#from ckptman_daemon import logger
 
+# Connect with the IM
 def connect():
-	#logging.debug('im_connector: they call me')
-	
-	# comprobamos que el fichero de credenciales existe y esta en formato correcto
 	if AUTH_FILE is None:
 		logging.error("The authentication file is mandatory")
-	#try:
 	auth_data = Authentication.read_auth_data(AUTH_FILE)
 	if auth_data is None:
 		logging.error("The authentication file has incorrect format.")
-	#except:
-		#logging.error("The authentication file does not exist.")
-		#time.sleep(30)
-	#logging.info("Auth_data: " + str(auth_data))
-	# conectamos con el demonio del IM   
+
 	if XMLRCP_SSL:
 		logging.debug("Client safely connecting with: " + IM_URL)
 		from springpython.remoting.xmlrpc import SSLClient
@@ -43,9 +35,9 @@ def connect():
 		server = xmlrpclib.ServerProxy(IM_URL,allow_none=True)
 		
 	return auth_data, server
-	
+
+# Get the credentials of the user
 def get_credentials():
-	# comprobamos que el fichero de credenciales existe y esta en formato correcto
 	if AUTH_FILE is None:
 		logging.error("The authentication file is mandatory")
 
@@ -55,6 +47,7 @@ def get_credentials():
 		
 	return auth_data
 
+# Get the infrastructure info
 def getInfrastructureInfo():
 	node_list = {}
 	is_spot = False
@@ -78,7 +71,6 @@ def getInfrastructureInfo():
 		
 			if success:
 				info_radl = radl_parse.parse_radl(info)
-				#instance_type = info_radl.systems[0].getValue('instance_type')
 				is_spot = info_radl.systems[0].getValue('spot')
 				node_name = info_radl.systems[0].name
 				if is_spot == 'yes':
@@ -92,7 +84,7 @@ def getInfrastructureInfo():
 	logging.info(node_list)
 	return node_list
 
-# Metodo que el tiempo en el que un nodo se puso en marcha
+# Get the time when a node has been started
 def get_launch_time(node):
 	launch_time = 0
 		
@@ -122,7 +114,7 @@ def get_launch_time(node):
 				logging.error("ERROR obtaining the node information: " + vm_id)
 	return launch_time
 
-# Metodo que obtiene el estado de los nodos para saber si estan vivos o no
+# Obtain node's state
 def get_node_state(node):
 	state = ""
 
@@ -153,6 +145,7 @@ def get_node_state(node):
 	
 	return state
 
+# Get the bid of the user for the spot instances
 def get_user_spot_bid(node):
 	bid = 0.0
 		
@@ -183,7 +176,7 @@ def get_user_spot_bid(node):
 	
 	return bid
 
-#Metodo que obtiene el tipo de instancia (small, micro..)
+# Obtains the instance type of the node
 def get_instance_type(node):
 	instance_type = ""
 
@@ -214,7 +207,7 @@ def get_instance_type(node):
 	
 	return instance_type
 
-# La region la puedo sacar del disk.image.url (disk.0.image.url = 'aws://us-east-1/ami-e50e888c')
+# Obtains the region where the node is deployed
 def get_region(node):
 	region = ""
 
@@ -240,13 +233,14 @@ def get_region(node):
 				node_name = info_radl.systems[0].name
 				if node_name == node:
 					image_url = info_radl.systems[0].getValue('disk.0.image.url')
-					#region = parsear la url para quedarnos con ella ('aws://us-east-1/ami-e50e888c')
+					# Parse the URL to get the region (for example 'aws://us-east-1/ami-e50e888c')
 					region = image_url.split('/')[2]
 			else:
 				logging.error("ERROR obtaining the instance type: " + vm_id)
 	
 	return region
-	
+
+# Obtains the availability zone where the node is deployed
 def get_availability_zone(node):
 	availability_zone = ""
 
