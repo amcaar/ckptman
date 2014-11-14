@@ -1,5 +1,6 @@
 ckptman
 =======
+ 
  ckptman is a tool that automates checkpointing in the jobs running on spot instances in order to save as much as job process and money as possible. From now, it implements two checkpointing algorithms:
  
 - **Hourly Checkpointing algorithm**: checkpoints are taken just prior to the beginning of next instance hour. Since Amazon is not charging any partial hour, this scheme will save as much tasks as the user is paying.
