@@ -12,15 +12,15 @@ It is created to work with `Amazon Spot Instances`_ , `BLCR`_ checkpointing tool
 Usage
 =====
 
-First, configure the algorithm that you want to apply for the checkpointing (HOUR or THRESHOLD). You can configure also the parameters associated with the algorithm you have chosen and the log file of the tool. For that, you only need to edit the config.py file with your favourite editor.
-``
-vi config.py
-``
+First, configure the algorithm that you want to apply for the checkpointing (HOUR or THRESHOLD). You can configure also the parameters associated with the algorithm you have chosen and the log file of the tool. For that, you only need to edit the config.py file with your favourite editor::
 
-Start ckptman just by by typing:
-``
-./ckptman start
-``
+    vi config.py
+
+
+Start ckptman just by by typing::
+
+    ./ckptman start
+
 
 .. _`SLURM`: http://slurm.schedmd.com/
 .. _`Amazon Spot Instances`: http://aws.amazon.com/es/ec2/purchasing-options/spot-instances/
