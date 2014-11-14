@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# ckptman - Checkpointing Manager for BLCR and spot instances
+# 2014 - GRyCAP - Universitat Politecnica de Valencia
+# 
+# auxiliar launcher of ckptman
+#
+
+CKPTMAN_PATH=/usr/local/ckptman/ckptman
+
+# verify the presence of the ckptman daemon
+if ! [ -x ${CKPTMAN_PATH} ]; then
+	echo "Error: could not find executable ${CKPTMAN_PATH}"
+	exit 1
+fi
+
+sleep 90
+${CKPTMAN_PATH} start &

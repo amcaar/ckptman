@@ -1,0 +1,119 @@
+#!/bin/bash
+#
+# ckptman - Checkpointing Manager for BLCR and spot instances
+# 2014 - GRyCAP - Universitat Politecnica de Valencia
+# 
+
+CKPTMAN_PATH=/usr/local/ckptman
+CKPTMAN_DAEMON=${CKPTMAN_PATH}/ckptman_daemon.py
+
+# the server will record its PID in this file
+PIDFILE=/var/run/ckptman.pid
+
+# verify the presence of the ckptman daemon
+if ! [ -x ${CKPTMAN_DAEMON} ]; then
+	echo "Error: could not find executable ${CKPTMAN_DAEMON}"
+	exit 1
+fi
+
+# Function to start the Checkpointing Manager Daemon in background 
+function start() {
+	echo -n "Starting Checkpointing Manager Daemon: "
+	test -d ${CKPTMAN_PATH}/log || mkdir ${CKPTMAN_PATH}/log
+	if [ $? -ne 0 ]; then
+		echo "[Error] (see /log/ckptman.err file for details)"
+		return
+	fi
+	#launch the daemon in background
+	#modificacion del 12/09, porque sale error de no such file or directory
+	#${CKPTMAN_DAEMON} 2> ${CKPTMAN_PATH}/log/ckptman.err &
+	python ${CKPTMAN_DAEMON} 2> ${CKPTMAN_PATH}/log/ckptman.err &
+	pid=$!
+	echo ${pid} > ${PIDFILE}
+	sleep 2
+	alive=`ps ${pid} | grep ${pid} | wc -l`
+	if [ ${alive} -eq 1 ]
+	then
+		# if there is some error msg en the err file
+		#if [ -s ${CKPTMAN_PATH}/log/ckptman.err ]
+		#then
+			# kill the daemon and return error
+			#kill ${pid}
+			#echo "[Error] (see /log/ckptman.err file for details)"
+		#else
+		echo "[OK]"
+		#fi
+	else
+		echo "[Error]"
+	fi
+}
+
+# Function to stop the Checkpointing Manager Daemon 
+function stop() {
+	echo -n "Stopping Checkpointing Manager Daemon: "
+	if [ -f ${PIDFILE} ]
+	then
+		kill `cat ${PIDFILE}`
+		rm -f ${PIDFILE}
+	fi
+	echo "[OK]"
+}
+
+# Function to know the status of the Checkpointing Manager Daemon
+function status() {
+	if ! [ -f ${PIDFILE} ]
+	then
+		echo "Checkpointing Manager Daemon Stopped"
+		exit 1
+	else
+		pid=`cat ${PIDFILE}`
+		alive=`ps ${pid} | grep ${pid} | wc -l`
+		if [ ${alive} -eq 0 ]
+		then
+			echo "PID file exists but ckptman Daemon Stopped. Removing PID file"
+			rm -f ${PIDFILE}
+			exit 2
+		else
+			echo "Checkpointing Manager Daemon Running (PID: ${pid})"
+			exit 0
+		fi
+	fi
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	# check if the ckptman daemon is running
+	if ! [ -f ${PIDFILE} ]
+	then
+		start
+	else
+		pid=`cat ${PIDFILE}`
+		alive=`ps ${pid} | grep ${pid} | wc -l`
+		if [ ${alive} -eq 0 ]
+		then
+			rm -f ${PIDFILE}
+			start
+		else
+			echo "Checkpointing Manager Daemon Running (PID: ${pid})"
+		fi
+	fi
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+	sleep 2
+	start
+	;;
+  status)
+	status
+	;;
+  *)
+	echo "Usage: {start|stop|status|restart}"
+	exit 1
+esac
+
+exit 0
+
