@@ -6,7 +6,7 @@ ckptman
 
 - **Threshold Checkpointing algorithm**: checkpoints are taken when a rising in the price of the spot instance is observed inside an interval. The interval is a % of the price the user has determined. 
 
-It is created to work with Amazon spot instances, BLCR checkpointing tool and SLURM as local resource management system.
+It is created to work with `Amazon Spot Instances`_ , `BLCR`_ checkpointing tool and `SLURM`_ as local resource management system, inside the `EC3`_ cluster deployment tool. Also, it needs `Pyslurm`_ to be installed in the system.
 
 Usage
 =====
@@ -20,3 +20,12 @@ Start ckptman just by by typing:
 ```yml 
 ./ckptman start
 ```
+
+.. _`SLURM`: http://slurm.schedmd.com/
+.. _`Amazon Spot Instances`: http://aws.amazon.com/es/ec2/purchasing-options/spot-instances/
+.. _`IM`: https://github.com/grycap/im
+.. _`EC3`: https://github.com/grycap/ec3
+.. _`Pyslurm`: http://www.gingergeeks.co.uk/pyslurm/
+.. _`BLCR`: http://crd.lbl.gov/departments/computer-science/CLaSS/research/BLCR/
+
+
