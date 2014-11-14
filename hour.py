@@ -6,6 +6,9 @@ to the beginning of next instance hour. Since Amazon is not charging
 any partial hour, this scheme will save as much tasks as the user 
 is paying.
 
+ckptman - Checkpointing Manager for BLCR and spot instances
+2014 - GRyCAP - Universitat Politecnica de Valencia
+ 
 @author: Amanda
 '''
 
@@ -13,25 +16,24 @@ import time
 import logging
 import datetime
 
-from config import * # aqui estan definidas las variables
+from config import * 
 
 HOUR_DURATION = 3600
 
-# launch_time es un timestamp de linux formato: 1403174380
+# launch_time is a Linux timestamp like: 1403174380
 def is_checkpoint_time(launch_time, hostname):
 	checkpoint = False
-	# Transformamos el timestamp en el formato manejado por python - NO hace falta
 	launched = datetime.datetime.fromtimestamp(int(launch_time)).strftime('%Y-%m-%d %H:%M:%S')  
 	logging.info("HOUR: Time node " + hostname + " was launched is " + launched)
-	# Obtenemos la hora actual
-	now = time.strftime("%H:%M:%S") # En formato string          
+	# Obtain actual hour
+	now = time.strftime("%H:%M:%S")       
 	logging.info("HOUR: Actual time is " + now) 
 	actual_time = int(time.time())
 	
-	# Calculamos el tiempo que lleva el nodo en marcha
+	# Calculate the time the node is running
 	live_time = actual_time - launch_time
 	
-	# Comprobamos si hay que hacer checkpoint
+	# Check if it's time to make a checkpoint
 	remaining_hour_time = HOUR_DURATION - live_time % HOUR_DURATION
 	logging.debug("HOUR: Remaining hour time = %d for node %s" % (int(remaining_hour_time), hostname))
 	if int(remaining_hour_time) < int(CKPT_TIME_MARGIN):
