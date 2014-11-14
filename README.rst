@@ -13,12 +13,12 @@ Usage
 =====
 
 First, configure the algorithm that you want to apply for the checkpointing (HOUR or THRESHOLD). You can configure also the parameters associated with the algorithm you have chosen and the log file of the tool. For that, you only need to edit the config.py file with your favourite editor.
-```yml 
+```
 vi config.py
 ```
 
 Start ckptman just by by typing:
-```yml 
+```
 ./ckptman start
 ```
 
