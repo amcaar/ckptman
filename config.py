@@ -1,3 +1,8 @@
+#
+# ckptman - Checkpointing Manager for BLCR and spot instances
+# 2014 - GRyCAP - Universitat Politecnica de Valencia
+# 
+
 CLIENT_DIR = '.'
 XMLRCP_SSL = False
 XMLRCP_SSL_CA_CERTS = CLIENT_DIR + "/pki/ca-chain.pem"
