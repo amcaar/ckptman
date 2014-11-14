@@ -2,9 +2,9 @@ ckptman
 =======
  ckptman is a tool that automates checkpointing in the jobs running on spot instances in order to save as much as job process and money as possible. From now, it implements two checkpointing algorithms:
  
-- HOURly Checkpointing algorithm: checkpoints are taken just prior to the beginning of next instance hour. Since Amazon is not charging any partial hour, this scheme will save as much tasks as the user is paying.
+- **HOUR**ly Checkpointing algorithm: checkpoints are taken just prior to the beginning of next instance hour. Since Amazon is not charging any partial hour, this scheme will save as much tasks as the user is paying.
 
-- Threshold Checkpointing algorithm: checkpoints are taken when a rising in the price of the spot instance is observed inside an interval. The interval is a % of the price the user has determined. 
+- **Threshold** Checkpointing algorithm: checkpoints are taken when a rising in the price of the spot instance is observed inside an interval. The interval is a % of the price the user has determined. 
 
 Usage
 =====
