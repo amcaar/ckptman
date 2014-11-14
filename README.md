@@ -6,6 +6,8 @@ ckptman
 
 - **Threshold Checkpointing algorithm**: checkpoints are taken when a rising in the price of the spot instance is observed inside an interval. The interval is a % of the price the user has determined. 
 
+It is created to work with Amazon spot instances, BLCR checkpointing tool and SLURM as local resource management system.
+
 Usage
 =====
 
