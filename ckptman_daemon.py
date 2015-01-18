@@ -82,8 +82,8 @@ def obtain_sbatch_command(job_id):
 	command = ""
 	if jobs:
 	   for job in jobs:
-			if key["JobState"] == job_id:
-				command = str(key["Command"])
+			if job["JobState"] == job_id:
+				command = str(job["Command"])
 	logging.info("Command for job " + job_id + " is: " + command)
 	return command
 	
