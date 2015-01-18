@@ -15,7 +15,6 @@ import threading
 import subprocess
 import logging
 import os.path 
-import pyslurm
 
 from im_connector import * 
 from config import * 
@@ -32,19 +31,27 @@ def init():
 						
 	logging.info('************ Starting ckptman daemon **************')
 
-# Obtains the list of jobs that are in execution in SLURM (using Pyslurm)
-def get_job_info():
-	a = pyslurm.job()
-	jobs = a.get()
-	job_list = {}
+def parse_scontrol(out):
+    if out.find("=") < 0: return []
+    r = []
+    for line in out.split("\n"):
+        line = line.strip()
+        if not line: continue
+        d = {}; r.append(d); s = False
+        for k in [ j for i in line.split("=") for j in i.rsplit(" ", 1) ]:
+            if s: d[f] = k
+            else: f = k
+            s = not s
+    return r
 
-	if jobs:
-	   for key, value in jobs.iteritems():
-			state = str(value.get("job_state")[1])
-			if state == 'RUNNING':
-				job_list [str(key)] = str(value.get("nodes"))
-				
-	return job_list
+# Obtains the list of jobs that are in execution in SLURM (using Pyslurm)
+	exit = parse_scontrol(run_command("scontrol -o show jobs".split(" ")))
+	job_list = {}
+	if exit:
+		for key in exit:
+			if key["JobState"] == "RUNNING":
+				job_list [str(key["JobId"])] = str(key["BatchHost"])
+    return job_list
 
 # Checks if the SLURM job has finished correctly
 def is_job_completed(job_id):
@@ -70,17 +77,14 @@ def check_ckpt_file(job_id):
 
 # Obtains the command used to launch the job, in order to relaunch it again
 def obtain_sbatch_command(job_id):
-	a = pyslurm.job()
-	jobs = a.get()
+	jobs = parse_scontrol(run_command("scontrol -o show jobs".split(" ")))
 	command = ""
-
 	if jobs:
-	   for key, value in jobs.iteritems():
-			if key == job_id:
-				command = str(value.get("command"))
+	   for job in jobs:
+			if key["JobState"] == job_id:
+				command = str(key["Command"])
 	logging.info("Command for job " + job_id + " is: " + command)
 	return command
-				
 	
 # Refresh the dictionary of pairs (spot_node:job)
 def refresh_dictionary():
@@ -213,36 +217,16 @@ def launch_daemon():
 		time.sleep(REVALUE_TIME)
 
 	
-#############################################################
-#	 Class and methods to execute bash commands         #
-#############################################################
-	
-class CommandError(Exception):pass
-
-class DownNodeError(Exception):pass
-
-def run_command(command, shell=False):
-    string = " "
-    try:
-        logging.debug("executing: %s" % command)
-        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    except:
-        if type(command)==list: command = string.join(command)
-        logging.error('Could not execute command "%s"' %command)
-        raise
-    
-    (output, err) = p.communicate()
-    if p.returncode != 0:
-        if type(command)==list: command = string.join(command)
-        logging.error(' Error in command "%s"' % command)
-        logging.error(' Return code was: %s' % p.returncode)
-        logging.error(' Error output was:\n%s' % err)
-        if err == "scontrol_checkpoint error: Required node not available (down or drained)\n":
-            raise DownNodeError()
-        else:
-            raise CommandError()
-    else:
-        return output
+# Method to execute bash commands         
+def run_command(command):
+	try:
+		p=subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		(out, err) = p.communicate()
+		if p.returncode != 0:
+ 			raise Exception("return code: %d\nError output: %s" % (p.returncode, err))
+		return out
+	except Exception, e:
+		raise Exception("Error executing '%s': %s" % (" ".join(command), str(e)))
 			
 # main method
 if __name__ == '__main__':
