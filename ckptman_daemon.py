@@ -45,6 +45,7 @@ def parse_scontrol(out):
     return r
 
 # Obtains the list of jobs that are in execution in SLURM (using Pyslurm)
+def get_job_info():
 	exit = parse_scontrol(run_command("scontrol -o show jobs".split(" ")))
 	job_list = {}
 	if exit:
