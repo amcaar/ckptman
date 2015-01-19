@@ -183,7 +183,8 @@ def checkpoint_control(dic):
 							ckpt = hour.is_checkpoint_time(launch_time, key)
 							if ckpt:
 								logging.debug("Time to perform a checkpoint.")
-								run_command("scontrol checkpoint create " + value)
+								run_command(("ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no %s /bin/bash -c " % key).split(" ")
+								            .append('\"echo \\\`pgrep -n mpirun\\\` > ~/.job-%s && ompi-checkpoint \\\`pgrep -n mpirun\\\`\"' % value))
 								logging.debug("Checkpointing performed successfully.")
 							else:
 								logging.debug("It's NOT time to perform a checkpoint.")
@@ -197,7 +198,8 @@ def checkpoint_control(dic):
 							ckpt = threshold.is_checkpoint_time(launch_time, key)
 							if ckpt:
 								logging.debug("Time to perform a checkpoint.")
-								run_command("scontrol checkpoint create " + value)
+								run_command(("ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no %s /bin/bash -c " % key).split(" ")
+								            .append('\"echo \\\`pgrep -n mpirun\\\` > ~/.job-%s && ompi-checkpoint \\\`pgrep -n mpirun\\\`\"' % value))
 								logging.debug("Checkpointing performed successfully.")
 							else:
 								logging.debug("It's NOT time to perform a checkpoint.")
