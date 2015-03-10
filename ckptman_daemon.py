@@ -78,12 +78,12 @@ def check_ckpt_file(job_id):
 
 # Obtains the command used to launch the job, in order to relaunch it again
 def obtain_sbatch_command(job_id):
-	jobs = parse_scontrol(run_command("scontrol -o show jobs"))
+	jobs = parse_scontrol(run_command("scontrol -o show job "))
 	command = ""
 	if jobs:
-	   for job in jobs:
-			if job["JobState"] == job_id:
-				command = str(job["Command"])
+		for key in jobs:
+			if key["JobId"] == str(job_id):
+				command = str(key["Command"])
 	logging.info("Command for job " + job_id + " is: " + command)
 	return command
 	
