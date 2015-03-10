@@ -81,9 +81,9 @@ def obtain_sbatch_command(job_id):
 	jobs = parse_scontrol(run_command("scontrol -o show jobs".split(" ")))
 	command = ""
 	if jobs:
-	   for job in jobs:
-			if job["JobState"] == job_id:
-				command = str(job["Command"])
+		for key in jobs:
+			if key["JobId"] == str(job_id):
+				command = str(key["Command"])
 	logging.info("Command for job " + job_id + " is: " + command)
 	return command
 	
@@ -148,7 +148,7 @@ def checkpoint_control(dic):
 						if ckptFile:
 							logging.debug("Checkpoint file exists. Time to restart a job from a checkpoint.")
 							try:
-								run_command("scontrol checkpoint restart " + value)
+								run_command(("scontrol checkpoint restart " + value).split(" "))
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
 								logging.error("Command failed while restarting the job from the checkpointing file because SLURM do not know that the node is dead.")
@@ -156,7 +156,7 @@ def checkpoint_control(dic):
 							time.sleep(60)
 							
 							try:
-								run_command("scontrol checkpoint restart " + value)
+								run_command(("scontrol checkpoint restart " + value).split(" "))
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
 								logging.error("Command failed while restarting the job from the checkpointing file.")
@@ -167,7 +167,7 @@ def checkpoint_control(dic):
 							logging.warning("Checkpoint file DO NOT exist. SLURM will Restart the job from the beginning.")
 							command = obtain_sbatch_command(value)
 							if command != "":
-								run_command("sbatch " + command)
+								run_command(("sbatch " + command).split(" "))
 								#run_command("scontrol requeue " + value)
 								logging.debug("Success requeuing the job from the beginning")
 							else:
