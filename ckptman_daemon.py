@@ -14,8 +14,7 @@ import time
 import threading
 import subprocess
 import logging
-import os.path 
-import pyslurm
+import os.path
 
 from im_connector import * 
 from config import * 
@@ -32,19 +31,28 @@ def init():
 						
 	logging.info('************ Starting ckptman daemon **************')
 
-# Obtains the list of jobs that are in execution in SLURM (using Pyslurm)
-def get_job_info():
-	a = pyslurm.job()
-	jobs = a.get()
-	job_list = {}
+def parse_scontrol(out):
+	if out.find("=") < 0: return []
+ 	r = []
+	for line in out.split("\n"):
+		line = line.strip()
+		if not line: continue
+		d = {}; r.append(d); s = False
+		for k in [ j for i in line.split("=") for j in i.rsplit(" ", 1) ]:
+			if s: d[f] = k
+			else: f = k
+			s = not s
+	return r
 
-	if jobs:
-	   for key, value in jobs.iteritems():
-			state = str(value.get("job_state")[1])
-			if state == 'RUNNING':
-				job_list [str(key)] = str(value.get("nodes"))
-				
-	return job_list
+# Obtains the list of jobs that are in execution in SLURM
+def get_job_info():
+	exit = parse_scontrol(run_command("scontrol -o show jobs".split(" ")))
+	job_list = {}
+	if exit:
+		for key in exit:
+			if key["JobState"] == "RUNNING":
+				job_list [str(key["JobId"])] = str(key["BatchHost"])
+    return job_list
 
 # Checks if the SLURM job has finished correctly
 def is_job_completed(job_id):
@@ -70,17 +78,14 @@ def check_ckpt_file(job_id):
 
 # Obtains the command used to launch the job, in order to relaunch it again
 def obtain_sbatch_command(job_id):
-	a = pyslurm.job()
-	jobs = a.get()
+	jobs = parse_scontrol(run_command("scontrol -o show jobs".split(" ")))
 	command = ""
-
 	if jobs:
-	   for key, value in jobs.iteritems():
-			if key == job_id:
-				command = str(value.get("command"))
+	   for job in jobs:
+			if job["JobState"] == job_id:
+				command = str(job["Command"])
 	logging.info("Command for job " + job_id + " is: " + command)
 	return command
-				
 	
 # Refresh the dictionary of pairs (spot_node:job)
 def refresh_dictionary():
