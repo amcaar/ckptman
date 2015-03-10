@@ -46,7 +46,7 @@ def parse_scontrol(out):
 
 # Obtains the list of jobs that are in execution in SLURM
 def get_job_info():
-	exit = parse_scontrol(run_command("scontrol -o show jobs".split(" ")))
+	exit = parse_scontrol(run_command("scontrol -o show jobs"))
 	job_list = {}
 	if exit:
 		for key in exit:
@@ -78,7 +78,7 @@ def check_ckpt_file(job_id):
 
 # Obtains the command used to launch the job, in order to relaunch it again
 def obtain_sbatch_command(job_id):
-	jobs = parse_scontrol(run_command("scontrol -o show jobs".split(" ")))
+	jobs = parse_scontrol(run_command("scontrol -o show jobs"))
 	command = ""
 	if jobs:
 	   for job in jobs:
