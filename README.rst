@@ -7,7 +7,7 @@ ckptman is a tool that automates checkpointing in the jobs running on spot insta
 
 - **Threshold Checkpointing algorithm**: checkpoints are taken when a rising in the price of the spot instance is observed inside an interval. The interval is a % of the price the user has determined. 
 
-It is created to work with `Amazon Spot Instances`_ , `BLCR`_ checkpointing tool and `SLURM`_ as local resource management system, inside the `EC3`_ cluster deployment tool. Also, it needs `Pyslurm`_ to be installed in the system.
+It is created to work with `Amazon Spot Instances`_ , `BLCR`_ checkpointing tool and `SLURM`_ as local resource management system, inside the `EC3`_ cluster deployment tool.
 
 Usage
 =====
