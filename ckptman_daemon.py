@@ -52,7 +52,7 @@ def get_job_info():
 		for key in exit:
 			if key["JobState"] == "RUNNING":
 				job_list [str(key["JobId"])] = str(key["BatchHost"])
-    return job_list
+	return job_list
 
 # Checks if the SLURM job has finished correctly
 def is_job_completed(job_id):
