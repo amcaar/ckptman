@@ -148,6 +148,7 @@ def checkpoint_control(dic):
 						if ckptFile:
 							logging.debug("Checkpoint file exists. Time to restart a job from a checkpoint.")
 							try:
+								run_command("scancel " + value)
 								run_command("scontrol checkpoint restart " + value)
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
