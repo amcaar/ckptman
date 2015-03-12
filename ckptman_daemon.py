@@ -148,7 +148,6 @@ def checkpoint_control(dic):
 						if ckptFile:
 							logging.debug("Checkpoint file exists. Time to restart a job from a checkpoint.")
 							try:
-								run_command("scancel " + value)
 								run_command("scontrol checkpoint restart " + value)
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
@@ -156,6 +155,10 @@ def checkpoint_control(dic):
 							# Wait for SLURM detects the dead node
 							time.sleep(60)
 							
+							try:
+								run_command("scancel " + value)
+							except:
+								time.sleep(40)
 							try:
 								run_command("scontrol checkpoint restart " + value)
 								logging.debug("Success restarting the job from the checkpointing file.")
