@@ -68,7 +68,7 @@ def getInfrastructureInfo():
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
 			(success, info)  = server.GetVMInfo(infrastructure_id, vm_id, auth_data)
-		
+			#TODO: ignore nodes in state 'off' or 'failed'
 			if success:
 				info_radl = radl_parse.parse_radl(info)
 				is_spot = info_radl.systems[0].getValue('spot')
