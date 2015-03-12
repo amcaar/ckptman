@@ -158,7 +158,8 @@ def checkpoint_control(dic):
 							try:
 								run_command("scancel " + value)
 							except:
-								time.sleep(40)
+								time.sleep(1)
+							time.sleep(100)
 							try:
 								run_command("scontrol checkpoint restart " + value)
 								logging.debug("Success restarting the job from the checkpointing file.")
@@ -246,7 +247,7 @@ def run_command(command, shell=False):
         logging.error(' Error in command "%s"' % command)
         logging.error(' Return code was: %s' % p.returncode)
         logging.error(' Error output was:\n%s' % err)
-        if err == "scontrol_checkpoint error: Required node not available (down or drained)\n":
+        if err == "scontrol_checkpoint error: Required node not available (down, drained or reserved)\n":
             raise DownNodeError()
         else:
             raise CommandError()
