@@ -76,6 +76,7 @@ def getInfrastructureInfo():
 				#ignore nodes in state 'off' or 'failed' and delete them from the infrastructure
 				state = info_radl.systems[0].getValue('state')
 				if state != 'off' and state != 'failed':
+					logging.info("state of node " + node_name + " is " + state)
 					if is_spot == 'yes':
 						node_list[node_name] = 'spot'
 					else:
