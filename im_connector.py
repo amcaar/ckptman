@@ -51,6 +51,7 @@ def get_credentials():
 def getInfrastructureInfo():
 	node_list = {}
 	is_spot = False
+	state = ""
 	
 	(auth_data, server) = connect()
 	
@@ -68,15 +69,24 @@ def getInfrastructureInfo():
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
 			(success, info)  = server.GetVMInfo(infrastructure_id, vm_id, auth_data)
-			#TODO: ignore nodes in state 'off' or 'failed'
 			if success:
 				info_radl = radl_parse.parse_radl(info)
 				is_spot = info_radl.systems[0].getValue('spot')
 				node_name = info_radl.systems[0].name
-				if is_spot == 'yes':
-					node_list[node_name] = 'spot'
+				#ignore nodes in state 'off' or 'failed' and delete them from the infrastructure
+				if node_name == node:
+					state = info_radl.systems[0].getValue('state')
+				if state != 'off' and state != 'failed':
+					if is_spot == 'yes':
+						node_list[node_name] = 'spot'
+					else:
+						node_list[node_name] = 'ondemand'
 				else:
-					node_list[node_name] = 'ondemand'
+					(success, info) = server.RemoveResource(infrastructure_id, vm_id, auth_data)
+					if success:
+						logging.info("Successfully removed VM " + vm_id)
+					else:
+						logging.warn('Error removing the VM with ID: %s. Error: %s' % (vm_id, info))
 			else:
 				logging.error("ERROR obtaining the node information: " + vm_id)
 	
