@@ -160,7 +160,7 @@ def checkpoint_control(dic):
 							except:
 								time.sleep(1)
 							#TODO: revisar porque hay que esperar tanto
-							time.sleep(200)
+							time.sleep(220)
 							try:
 								run_command("scontrol checkpoint restart " + value)
 								logging.debug("Success restarting the job from the checkpointing file.")
