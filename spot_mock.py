@@ -36,36 +36,39 @@ class spot_mock:
 		Kill all the VMs if the spot price in "timestamp" is higher than bid 
 		"""
 		vm_list = self._get_vm_list()
-		# All the VMs have the same bid price, take the first one
-		bid = float(vm_list[0].systems[0].getValue('price'))
-		last_price = self.get_spot_price_history(0, timestamp)[0].price
-
-		if last_price > bid:
-			logging.info("Last price %f is higher than bid %d. Kill VMs!" % (last_price, bid))
-			# group them by region
-			vm_groups = {}
-			for vm in vm_list:
-				image_url = vm.systems[0].getValue('disk.0.image.url')
-				# Parse the URL to get the region (for example 'aws://us-east-1/ami-e50e888c')
-				region = image_url.split('/')[2]
-				if region in vm_groups:
-					vm_groups[region].append(vm)
-				else:
-					vm_groups[region] = [vm]
-			
-			self._set_ec2_credentials()
-			
-			# Kill them all!
-			for region in vm_groups.keys():
-				conn = boto.ec2.connect_to_region(region)
-				instances = []
-				for vm in vm_groups[region]:
-					instances.append(vm.systems[0].getValue('instance_id'))
-				logging.info("Terminating instances: ")
-				logging.info(instances)
-				conn.terminate_instances(instance_ids=instances)
+		if vm_list:
+			# All the VMs have the same bid price, take the first one
+			bid = float(vm_list[0].systems[0].getValue('price'))
+			last_price = self.get_spot_price_history(0, timestamp)[0].price
+	
+			if last_price > bid:
+				logging.info("Last price %f is higher than bid %d. Kill VMs!" % (last_price, bid))
+				# group them by region
+				vm_groups = {}
+				for vm in vm_list:
+					image_url = vm.systems[0].getValue('disk.0.image.url')
+					# Parse the URL to get the region (for example 'aws://us-east-1/ami-e50e888c')
+					region = image_url.split('/')[2]
+					if region in vm_groups:
+						vm_groups[region].append(vm)
+					else:
+						vm_groups[region] = [vm]
+				
+				self._set_ec2_credentials()
+				
+				# Kill them all!
+				for region in vm_groups.keys():
+					conn = boto.ec2.connect_to_region(region)
+					instances = []
+					for vm in vm_groups[region]:
+						instances.append(vm.systems[0].getValue('instance_id'))
+					logging.info("Terminating instances: ")
+					logging.info(instances)
+					conn.terminate_instances(instance_ids=instances)
+			else:
+				logging.debug("Last price %f is lower than bid %d." % (last_price, bid))
 		else:
-			logging.debug("Last price %f is lower than bid %d." % (last_price, bid))
+			logging.debug("No VMs to check.")
 
 	@staticmethod
 	def _set_ec2_credentials():
