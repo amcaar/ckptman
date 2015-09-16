@@ -20,6 +20,7 @@ from im_connector import *
 from config import * 
 import hour 
 import threshold 
+from spot_mock import spot_mock
 
 # Iniciates the ckptman logging
 def init():
@@ -214,11 +215,15 @@ def checkpoint_control(dic):
 
 # Launch ckptman daemon
 def launch_daemon():
+	spot_mock_obj = spot_mock()
 	while True:
 		nodes_jobs_dic = refresh_dictionary()
 		checkpoint_control(nodes_jobs_dic)
 		time.sleep(REVALUE_TIME)
-
+		
+		# Call the spot mock object to check if the VMs have to be killed
+		timestamp = int(time.time()) - threshold.TEST_INIT_TIME
+		spot_mock_obj.vm_killer(timestamp)
 	
 # Method to execute bash commands         
 def run_command(command):
