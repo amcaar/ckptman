@@ -62,8 +62,7 @@ def getInfrastructureInfo():
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
@@ -190,8 +189,7 @@ def get_instance_type(node):
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
@@ -221,8 +219,7 @@ def get_region(node):
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
@@ -254,8 +251,7 @@ def get_availability_zone(node):
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
