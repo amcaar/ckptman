@@ -11,7 +11,7 @@ XMLRCP_SSL_CA_CERTS = CLIENT_DIR + "/pki/ca-chain.pem"
 IM_URL = 'http://localhost:8899'
 
 # File with the authentication data to use to connect to the IM
-AUTH_FILE = "/usr/local/clues/bin/cloud/auth.dat"
+AUTH_FILE = "/usr/local/ec3/auth.dat"
 
 # Log file route
 LOG_FILE = "/usr/local/ckptman/log/ckptman.log"
