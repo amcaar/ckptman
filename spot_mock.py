@@ -15,7 +15,7 @@ class history_price:
 
 class spot_mock:
 	
-	DATA_FILE = "/home/micafer/codigo/spot_price/price.txt"
+	DATA_FILE = "/usr/local/ckptman/price.txt"
 
 	def __init__(self):
 		self.history = []
