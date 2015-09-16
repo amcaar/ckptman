@@ -38,7 +38,7 @@ class spot_mock:
 		vm_list = self._get_vm_list()
 		# All the VMs have the same bid price, take the first one
 		bid = float(vm_list[0].systems[0].getValue('price'))
-		last_price = self.get_spot_price_history(0, timestamp)[0]
+		last_price = self.get_spot_price_history(0, timestamp)[0].price
 
 		if last_price > bid:
 			logging.info("Last price %f is higher than bid %d. Kill VMs!" % (last_price, bid))
@@ -111,5 +111,5 @@ class spot_mock:
 					logging.error("ERROR obtaining the node information: " + vm_id)
 		
 		logging.debug("The vm list to check if they are going to be killed: ") 
-		logging.debug(vm_list)
-		return vm_list
+		logging.debug(vm_list[1:])
+		return vm_list[1:]
