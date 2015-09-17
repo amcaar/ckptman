@@ -156,8 +156,7 @@ def get_user_spot_bid(node):
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
