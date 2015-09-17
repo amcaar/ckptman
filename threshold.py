@@ -94,7 +94,7 @@ def is_checkpoint_time(launch_time, hostname):
     os.environ['AWS_SECRET_ACCESS_KEY'] = secret_key
     
     # Create the EC2 connection
-    ec2 = boto.ec2.connect_to_region(region)
+    #ec2 = boto.ec2.connect_to_region(region)
         
     if not checkpoint:
         
