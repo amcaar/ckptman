@@ -22,6 +22,7 @@ from spot_mock import spot_mock
 
 HOUR_DURATION = 3600
 TEST_INIT_TIME = int(time.time())
+spot_price = spot_mock()
 
 # list that contains the last historic price of the spot instances
 historical_price = [0,0]
@@ -107,7 +108,7 @@ def is_checkpoint_time(launch_time, hostname):
 
         end_time = int(time.time()) - TEST_INIT_TIME
         start_time = end_time - 600 
-        history = spot_mock.get_spot_price_history(start_time=start_time, end_time=end_time)
+        history = spot_price.get_spot_price_history(start_time=start_time, end_time=end_time)
         
         #average = history[0].price
         sum = 0
