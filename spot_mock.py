@@ -63,7 +63,6 @@ class spot_mock:
 				
 				# Kill them all!
 				for region in vm_groups.keys():
-					conn = boto.ec2.connect_to_region(region)
 					instances = []
 					for vm in vm_groups[region]:
 						instance_id = vm.systems[0].getValue('instance_id').split(";")[1]
@@ -73,7 +72,12 @@ class spot_mock:
 							instances.append(instance_id)
 					logging.info("Terminating instances: ")
 					logging.info(instances)
-					conn.terminate_instances(instance_ids=instances)
+					
+					try:
+						conn = boto.ec2.connect_to_region(region)
+						conn.terminate_instances(instance_ids=instances)
+					except:
+						logging.exception("Error terminating EC2 instances")
 			else:
 				logging.debug("Last price %f is lower than bid %d." % (last_price, bid))
 		else:
