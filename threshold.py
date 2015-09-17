@@ -117,7 +117,7 @@ def is_checkpoint_time(launch_time, hostname):
                 sum = sum + h.price
             average = sum/len(history)
             limit = (average + bid)/2
-            
+            logging.debug("THRESHOLD: The limit (threshold) value is: " + str(limit))
             logging.debug("THRESHOLD: Current spot price for the availability zone " + availability_zone + " : " + str(history[0].price) + " at " + str(history[0].timestamp))
             if(historical_price[0] != 0 and historical_price[1] != 0):
                 #if historical_price[0] != str(iso2unix(history[0].timestamp)):
@@ -133,7 +133,7 @@ def is_checkpoint_time(launch_time, hostname):
         else:
             logging.error("THRESHOLD: Cannot get the current spot price from Amazon")
     else:
-        history = ec2.get_spot_price_history(instance_type=instance_type, availability_zone=availability_zone, max_results=1)
+        history = spot_price.get_actual_spot_price(start=start_time, end=end_time)
         #historical_price[0] = iso2unix(history[0].timestamp)
         historical_price[0] = history[0].timestamp
         historical_price[1] = history[0].price
