@@ -43,7 +43,7 @@ class spot_mock:
 			# All the VMs have the same bid price, take the first one
 			bid = float(vm_list[0].systems[0].getValue('price'))
 
-			if bid == 0.0:
+			if bid <= 0:
 				logging.warn("User bid is 0!. Skipping VM kill step.")
 				return
 			
