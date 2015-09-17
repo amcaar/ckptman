@@ -19,11 +19,14 @@ class spot_mock:
 
 	def __init__(self):
 		self.history = []
-		f = open(self.DATA_FILE,'r')
-		for line in f.readlines():
-			parts = line.split("\t")
-			self.history.append(history_price(parts[1], parts[0]))
-		f.close()
+		try:
+			f = open(self.DATA_FILE,'r')
+			for line in f.readlines():
+				parts = line.split("\t")
+				self.history.append(history_price(parts[1], parts[0]))
+			f.close()
+		except:
+			logging.exception("Error reading spot price history file: %s." + self.DATA_FILE)
 	
 	def get_spot_price_history(self, start, end):
 		"""
