@@ -133,7 +133,8 @@ def is_checkpoint_time(launch_time, hostname):
         else:
             logging.error("THRESHOLD: Cannot get the current spot price from Amazon")
     else:
-        history = spot_price.get_actual_spot_price(start=start_time, end=end_time)
+        end_time = int(time.time()) - TEST_INIT_TIME
+        history = spot_price.get_spot_price_history(start=0, end=end_time)
         #historical_price[0] = iso2unix(history[0].timestamp)
         historical_price[0] = history[0].timestamp
         historical_price[1] = history[0].price
