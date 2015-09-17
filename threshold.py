@@ -15,7 +15,7 @@ import time
 import datetime
 import os
 import calendar
-from iso8601 import parse_date
+#from iso8601 import parse_date
 from im_connector import * 
 from config import * 
 from spot_mock import spot_mock
@@ -28,13 +28,13 @@ spot_price = spot_mock()
 historical_price = [0,0]
 
 # Converts the amazon timestamp (ISO 8601) into unix format
-def iso2unix(timestamp):
+#def iso2unix(timestamp):
     # use iso8601.parse_date to convert the timestamp into a datetime object.
-    parsed = parse_date(timestamp)
+    #parsed = parse_date(timestamp)
     # now grab a time tuple that we can feed mktime
-    timetuple = parsed.timetuple()
+    #timetuple = parsed.timetuple()
 
-    return calendar.timegm(timetuple)
+    #return calendar.timegm(timetuple)
 
     
 # Determine if it's time to perform a checkpoint
@@ -108,7 +108,7 @@ def is_checkpoint_time(launch_time, hostname):
 
         end_time = int(time.time()) - TEST_INIT_TIME
         start_time = end_time - 600 
-        history = spot_price.get_spot_price_history(start_time=start_time, end_time=end_time)
+        history = spot_price.get_spot_price_history(start=start_time, end=end_time)
         
         #average = history[0].price
         sum = 0
@@ -120,19 +120,22 @@ def is_checkpoint_time(launch_time, hostname):
             
             logging.debug("THRESHOLD: Current spot price for the availability zone " + availability_zone + " : " + str(history[0].price) + " at " + str(history[0].timestamp))
             if(historical_price[0] != 0 and historical_price[1] != 0):
-                if historical_price[0] != str(iso2unix(history[0].timestamp)):
+                #if historical_price[0] != str(iso2unix(history[0].timestamp)):
+                if historical_price[0] != history[0].timestamp:
                     if history[0].price > float(historical_price[1]):
                         if history[0].price > limit:
                             logging.info("THRESHOLD: A variation in the spot price inside the interval has been detected")
                             checkpoint = True
 
-            historical_price[0] = iso2unix(history[0].timestamp)
+            #historical_price[0] = iso2unix(history[0].timestamp)
+            historical_price[0] = history[0].timestamp
             historical_price[1] = history[0].price
         else:
             logging.error("THRESHOLD: Cannot get the current spot price from Amazon")
     else:
         history = ec2.get_spot_price_history(instance_type=instance_type, availability_zone=availability_zone, max_results=1)
-        historical_price[0] = iso2unix(history[0].timestamp)
+        #historical_price[0] = iso2unix(history[0].timestamp)
+        historical_price[0] = history[0].timestamp
         historical_price[1] = history[0].price
 
     return checkpoint
