@@ -50,7 +50,7 @@ class spot_mock:
 			last_price = self.get_spot_price_history(0, timestamp)[0].price
 	
 			if last_price > bid:
-				logging.info("Last price %f is higher than bid %d. Kill VMs!" % (last_price, bid))
+				logging.info("Last price %f is higher than bid %f. Kill VMs!" % (last_price, bid))
 				# group them by region
 				vm_groups = {}
 				for vm in vm_list:
