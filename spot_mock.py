@@ -39,6 +39,11 @@ class spot_mock:
 		if vm_list:
 			# All the VMs have the same bid price, take the first one
 			bid = float(vm_list[0].systems[0].getValue('price'))
+
+			if bid == 0.0:
+				logging.warn("User bid is 0!. Skipping VM kill step.")
+				return
+			
 			last_price = self.get_spot_price_history(0, timestamp)[0].price
 	
 			if last_price > bid:
@@ -61,7 +66,11 @@ class spot_mock:
 					conn = boto.ec2.connect_to_region(region)
 					instances = []
 					for vm in vm_groups[region]:
-						instances.append(vm.systems[0].getValue('instance_id'))
+						instance_id = vm.systems[0].getValue('instance_id').split(";")[1]
+						if instance_id.startswith("sir"):
+							logging.warn("Trying to kill a spot request: %s. Ignore it." % instance_id)
+						else:
+							instances.append(instance_id)
 					logging.info("Terminating instances: ")
 					logging.info(instances)
 					conn.terminate_instances(instance_ids=instances)
