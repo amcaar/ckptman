@@ -106,7 +106,7 @@ class spot_mock:
 					access_key = auth["username"]
 					secret_key= auth["password"]
 		else:
-			logging.error("THRESHOLD: Error obtaining user credentials for EC2")
+			logging.error("SPOT_MOCK: Error obtaining user credentials for EC2")
 			
 		os.environ['AWS_ACCESS_KEY_ID'] = access_key
 		os.environ['AWS_SECRET_ACCESS_KEY'] = secret_key
