@@ -93,7 +93,7 @@ class spot_mock:
 					except:
 						logging.exception("Error terminating EC2 instances")
 			else:
-				logging.debug("Last price %f is lower than bid %d." % (last_price, bid))
+				logging.debug("Last price %f is lower than bid %f." % (last_price, bid))
 		else:
 			logging.debug("No VMs to check.")
 
