@@ -2,8 +2,8 @@ import logging
 import os
 import boto.ec2
 
-from im_connector import connect, get_credentials
-from IM.radl import radl_parse 
+#from im_connector import connect, get_credentials
+#from IM.radl import radl_parse 
 
 class history_price:
 	def __init__(self, time, price):
@@ -15,7 +15,8 @@ class history_price:
 
 class spot_mock:
 	
-	DATA_FILE = "/usr/local/ckptman/price.txt"
+	#DATA_FILE = "/usr/local/ckptman/price.txt"
+	DATA_FILE = "./price.txt"
 
 	def __init__(self):
 		self.history = []
@@ -32,7 +33,18 @@ class spot_mock:
 		"""
 		Get the spot price history in the specified time range
 		"""
-		return sorted([v for v in self.history if v.timestamp >= start and v.timestamp <= end], key=lambda val: val.timestamp, reverse=True)
+		max = history_price(-1,-1)
+		res = []
+		for v in self.history:
+			if max.timestamp < v.timestamp and v.timestamp < end:
+				max = v
+			if v.timestamp >= start and v.timestamp <= end:
+				res.append(v)
+		
+		res = sorted(res, reverse=True)
+		if not res:
+			res = [max]
+		return res
 	
 	def vm_killer(self, timestamp):
 		"""
