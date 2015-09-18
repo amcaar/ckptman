@@ -2,8 +2,8 @@ import logging
 import os
 import boto.ec2
 
-#from im_connector import connect, get_credentials
-#from IM.radl import radl_parse 
+from im_connector import connect, get_credentials
+from IM.radl import radl_parse 
 
 class history_price:
 	def __init__(self, time, price):
@@ -15,8 +15,7 @@ class history_price:
 
 class spot_mock:
 	
-	#DATA_FILE = "/usr/local/ckptman/price.txt"
-	DATA_FILE = "./price.txt"
+	DATA_FILE = "/usr/local/ckptman/price.txt"
 
 	def __init__(self):
 		self.history = []
