@@ -23,7 +23,7 @@ CKPT_ALGORITHM = 'THRESHOLD'
 REVALUE_TIME = 60
 
 # Checkpointing time margin 
-CKPT_TIME_MARGIN = 100
+CKPT_TIME_MARGIN = 160
 
 # Threshold (in percentage) for the THRESHOLD algorithm
 THRESHOLD = 20
