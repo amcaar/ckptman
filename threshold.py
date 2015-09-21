@@ -118,7 +118,10 @@ def is_checkpoint_time(launch_time, hostname):
             average = sum/len(history)
             limit = (average + bid)/2
             logging.debug("THRESHOLD: The limit (threshold) value is: " + str(limit))
+            logging.info("LIMIT: " + str(limit))
             logging.debug("THRESHOLD: Current spot price for the availability zone " + availability_zone + " : " + str(history[0].price) + " at " + str(history[0].timestamp))
+            logging.info("PRICE: " + str(history[0].price))
+            logging.info("TIME: " + str(history[0].timestamp))
             if(historical_price[0] != 0 and historical_price[1] != 0):
                 #if historical_price[0] != str(iso2unix(history[0].timestamp)):
                 if historical_price[0] != history[0].timestamp:
