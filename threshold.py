@@ -122,6 +122,7 @@ def is_checkpoint_time(launch_time, hostname):
             logging.debug("THRESHOLD: Current spot price for the availability zone " + availability_zone + " : " + str(history[0].price) + " at " + str(history[0].timestamp))
             logging.info("PRICE: " + str(history[0].price))
             logging.info("TIME: " + str(history[0].timestamp))
+            logging.info("ACTUAL_TIME: " + str(int(time.time()) - TEST_INIT_TIME))
             if(historical_price[0] != 0 and historical_price[1] != 0):
                 #if historical_price[0] != str(iso2unix(history[0].timestamp)):
                 if historical_price[0] != history[0].timestamp:
