@@ -189,6 +189,7 @@ def checkpoint_control(dic):
 								#run_command(("ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no %s /bin/bash -c " % key).split(" ")
 								#            .append('\"echo \\\`pgrep -n mpirun\\\` > ~/.job-%s && ompi-checkpoint \\\`pgrep -n mpirun\\\`\"' % value))
 								logging.debug("Checkpointing performed successfully.")
+								logging.debug("CKPT")
 							else:
 								logging.debug("It's NOT time to perform a checkpoint.")
 						else:
@@ -205,6 +206,7 @@ def checkpoint_control(dic):
 								#run_command(("ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no %s /bin/bash -c " % key).split(" ")
 								#            .append('\"echo \\\`pgrep -n mpirun\\\` > ~/.job-%s && ompi-checkpoint \\\`pgrep -n mpirun\\\`\"' % value))
 								logging.debug("Checkpointing performed successfully.")
+								logging.debug("CKPT")
 							else:
 								logging.debug("It's NOT time to perform a checkpoint.")
 						else:
