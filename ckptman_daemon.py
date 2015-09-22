@@ -135,8 +135,7 @@ def checkpoint_control(dic):
 				# VM state can be: unknown, pending, running, stopped, off, failed, configured
 				state = str(get_node_state(key))
 				logging.info("State of node " + key + " is " + state)
-				#unconfigured is temporal, search the problem
-				if state != "running" and state != "configured" and state != "unconfigured":
+				if state != "running" and state != "configured":
 					logging.warning("Node " + key + " is dead.")
 					# Dead node. Check if it finishes its execution
 					completed = is_job_completed(value)
