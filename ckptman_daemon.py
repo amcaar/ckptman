@@ -20,6 +20,7 @@ from im_connector import *
 from config import * 
 import hour 
 import threshold 
+import none
 from spot_mock import spot_mock
 
 # Iniciates the ckptman logging
@@ -210,6 +211,10 @@ def checkpoint_control(dic):
 								logging.debug("It's NOT time to perform a checkpoint.")
 						else:
 							logging.error("Error obtaining launch time of node " + key)
+					elif CKPT_ALGORITHM == 'NONE':
+						logging.info("Using NONE Checkpointing algorithm.")
+						ckpt = none.is_checkpoint_time()
+						logging.debug("It's NOT time to perform a checkpoint.")
 					else:
 						logging.error("The specified checkpointing algorithm is not recognized.")
 			else:
