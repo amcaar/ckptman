@@ -48,11 +48,11 @@ def parse_scontrol(out):
 
 # Obtains the list of jobs that are in execution in SLURM (using Pyslurm)
 def get_job_info():
-	exit = parse_scontrol(run_command("scontrol -o show jobs".split(" ")))
+	exit = parse_scontrol(run_command("scontrol -o show jobs -a".split(" ")))
 	job_list = {}
 	if exit:
 		for key in exit:
-			if key["JobState"] == "RUNNING":
+			if key["JobState"] == "RUNNING" or key["JobState"] == "NODE_FAIL":
 				job_list [str(key["JobId"])] = str(key["BatchHost"])
         return job_list
 
@@ -80,7 +80,7 @@ def check_ckpt_file(job_id):
 
 # Obtains the command used to launch the job, in order to relaunch it again
 def obtain_sbatch_command(job_id):
-	jobs = parse_scontrol(run_command("scontrol -o show jobs".split(" ")))
+	jobs = parse_scontrol(run_command("scontrol -o show jobs -a".split(" ")))
 	command = ""
 	if jobs:
 		for key in jobs:
@@ -88,6 +88,18 @@ def obtain_sbatch_command(job_id):
 				command = str(key["Command"])
 	logging.info("Command for job " + job_id + " is: " + command)
 	return command
+	
+	
+# Obtains the node used to execute the job, in order to relaunch it again
+def obtain_slurm_node(job_id):
+	jobs = parse_scontrol(run_command("scontrol -o show jobs -a".split(" ")))
+	node = ""
+	if jobs:
+		for key in jobs:
+			if key["JobId"] == str(job_id):
+				node = str(key["BatchHost"])
+	logging.info("Node for job " + job_id + " is: " + node)
+	return node
 	
 # Refresh the dictionary of pairs (spot_node:job)
 def refresh_dictionary():
@@ -148,22 +160,30 @@ def checkpoint_control(dic):
 						ckptFile = check_ckpt_file(value)
 						# If yes: scontrol checkpoint restart <job_id>
 						if ckptFile:
-							logging.debug("Checkpoint file exists. Time to restart a job from a checkpoint.")
+							logging.debug("Checkpoint file exists. Time to restart the job " + value + " from its checkpoint.")
 							try:
+							    #wn = obtain_slurm_node(value)
+								#run_command(("clues poweron " + wn).split(" "))
 								run_command(("scontrol checkpoint restart " + value).split(" "))
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
 								logging.error("Command failed while restarting the job from the checkpointing file because SLURM do not know that the node is dead.")
-							# Wait for SLURM detects the dead node
-							time.sleep(60)
+								# Wait for SLURM detects the dead node
+								time.sleep(45)
+								run_command(("scontrol checkpoint restart " + value).split(" "))
+								logging.debug("Success restarting the job from the checkpointing file.")
+							except DownNodeError:
+								logging.debug("Success restarting the job from the checkpointing file, regardless the error.")
+							except Exception:
+								logging.error("Command failed while restarting the job from the checkpointing file.")
 							
-							try:
+							'''try:
 								run_command(("scontrol checkpoint restart " + value).split(" "))
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
 								logging.error("Command failed while restarting the job from the checkpointing file.")
 							except DownNodeError:
-								logging.debug("Success restarting the job from the checkpointing file, regardless the error.")
+								logging.debug("Success restarting the job from the checkpointing file, regardless the error.")'''
 						else:
 							# If there is no checkpoint file, restart the job from the beginning
 							logging.warning("Checkpoint file DO NOT exist. SLURM will Restart the job from the beginning.")
@@ -233,14 +253,26 @@ def launch_daemon():
 		# Call the spot mock object to check if the VMs have to be killed
 		timestamp = int(time.time()) - threshold.TEST_INIT_TIME
 		spot_mock_obj.vm_killer(timestamp)
+
+#############################################################
+#	 Class and methods to execute bash commands         #
+#############################################################
 	
+class CommandError(Exception):pass
+
+class DownNodeError(Exception):pass
+
 # Method to execute bash commands         
 def run_command(command):
 	try:
 		p=subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		(out, err) = p.communicate()
 		if p.returncode != 0:
- 			raise Exception("return code: %d\nError output: %s" % (p.returncode, err))
+			if err == "scontrol_checkpoint error: Required node not available (down, drained or reserved)\n":
+				raise DownNodeError()
+			else:
+				#raise CommandError()
+				raise CommandError("return code: %d\nError output: %s" % (p.returncode, err))
 		return out
 	except Exception, e:
 		raise Exception("Error executing '%s': %s" % (" ".join(command), str(e)))
