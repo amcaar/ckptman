@@ -160,30 +160,32 @@ def checkpoint_control(dic):
 						ckptFile = check_ckpt_file(value)
 						# If yes: scontrol checkpoint restart <job_id>
 						if ckptFile:
-							logging.debug("Checkpoint file exists. Time to restart the job " + value + " from its checkpoint.")
+						if ckptFile:
+							logging.debug("Checkpoint file exists. Time to restart a job from a checkpoint.")
 							try:
 							    #wn = obtain_slurm_node(value)
 								#run_command(("clues poweron " + wn).split(" "))
-								run_command(("scontrol checkpoint restart " + value).split(" "))
+								run_command("scontrol checkpoint restart " + value)
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
 								logging.error("Command failed while restarting the job from the checkpointing file because SLURM do not know that the node is dead.")
-								# Wait for SLURM detects the dead node
-								time.sleep(45)
-								run_command(("scontrol checkpoint restart " + value).split(" "))
-								logging.debug("Success restarting the job from the checkpointing file.")
-							except DownNodeError:
-								logging.debug("Success restarting the job from the checkpointing file, regardless the error.")
-							except Exception:
-								logging.error("Command failed while restarting the job from the checkpointing file.")
+							# Wait for SLURM detects the dead node
+							time.sleep(60)
 							
 							'''try:
-								run_command(("scontrol checkpoint restart " + value).split(" "))
+								run_command("scancel " + value)
+							except:
+								time.sleep(1)
+							#TODO: revisar porque hay que esperar tanto
+							time.sleep(220)'''
+							try:
+								run_command("scontrol checkpoint restart " + value)
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
 								logging.error("Command failed while restarting the job from the checkpointing file.")
 							except DownNodeError:
-								logging.debug("Success restarting the job from the checkpointing file, regardless the error.")'''
+								logging.debug("Success restarting the job from the checkpointing file, regardless the error.")
+
 						else:
 							# If there is no checkpoint file, restart the job from the beginning
 							logging.warning("Checkpoint file DO NOT exist. SLURM will Restart the job from the beginning.")
