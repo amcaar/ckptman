@@ -178,6 +178,7 @@ def checkpoint_control(dic):
 								logging.error("Command failed while restarting the job from the checkpointing file.")
 							except DownNodeError:
 								logging.debug("Success restarting the job from the checkpointing file, regardless the error.")
+								logging.debug("RESTART_CKP")
 
 						else:
 							# If there is no checkpoint file, restart the job from the beginning
