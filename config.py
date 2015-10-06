@@ -26,4 +26,4 @@ REVALUE_TIME = 60
 CKPT_TIME_MARGIN = 160
 
 # Threshold (in percentage) for the THRESHOLD algorithm
-THRESHOLD = 20
+#THRESHOLD = 20
