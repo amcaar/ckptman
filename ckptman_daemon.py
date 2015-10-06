@@ -160,7 +160,7 @@ def checkpoint_control(dic):
 						ckptFile = check_ckpt_file(value)
 						# If yes: scontrol checkpoint restart <job_id>
 						if ckptFile:
-							logging.debug("Checkpoint file exists. Time to restart a job from a checkpoint.")
+							logging.debug("Checkpoint file exists. Time to restart the job " + value + " from its checkpoint.")
 							try:
 								#wn = obtain_slurm_node(value)
 								#run_command(("clues poweron " + wn).split(" "))
