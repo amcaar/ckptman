@@ -20,7 +20,7 @@ LOG_FILE = "/usr/local/ckptman/log/ckptman.log"
 CKPT_ALGORITHM = 'THRESHOLD'
 
 # Time to revalue 
-REVALUE_TIME = 60
+REVALUE_TIME = 30
 
 # Checkpointing time margin 
 CKPT_TIME_MARGIN = 160
