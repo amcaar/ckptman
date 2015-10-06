@@ -162,9 +162,9 @@ def checkpoint_control(dic):
 						if ckptFile:
 							logging.debug("Checkpoint file exists. Time to restart a job from a checkpoint.")
 							try:
-							        #wn = obtain_slurm_node(value)
+								#wn = obtain_slurm_node(value)
 								#run_command(("clues poweron " + wn).split(" "))
-								run_command("scontrol checkpoint restart " + value)
+								run_command(("scontrol checkpoint restart " + value).split(" "))
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
 								logging.error("Command failed while restarting the job from the checkpointing file because SLURM do not know that the node is dead.")
@@ -178,7 +178,7 @@ def checkpoint_control(dic):
 							#TODO: revisar porque hay que esperar tanto
 							time.sleep(220)'''
 							try:
-								run_command("scontrol checkpoint restart " + value)
+								run_command(("scontrol checkpoint restart " + value).split(" "))
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
 								logging.error("Command failed while restarting the job from the checkpointing file.")
