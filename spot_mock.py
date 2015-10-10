@@ -89,7 +89,7 @@ class spot_mock:
 					
 					try:
 						conn = boto.ec2.connect_to_region(region)
-						conn.terminate_instances(instance_ids=instances)
+						#conn.terminate_instances(instance_ids=instances)
 					except:
 						logging.exception("Error terminating EC2 instances")
 			else:
