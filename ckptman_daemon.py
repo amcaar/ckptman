@@ -169,7 +169,7 @@ def checkpoint_control(dic):
 							except CommandError:
 								logging.error("Command failed while restarting the job from the checkpointing file because SLURM do not know that the node is dead.")
 							# Wait for SLURM detects the dead node
-							time.sleep(95)
+							time.sleep(105)
 							
 							try:
 								run_command(("scontrol checkpoint restart " + value).split(" "))
