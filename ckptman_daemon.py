@@ -46,11 +46,11 @@ def parse_scontrol(out):
 
 # Obtains the list of jobs that are in execution in SLURM
 def get_job_info():
-	exit = parse_scontrol(run_command("scontrol -o show jobs"))
+	exit = parse_scontrol(run_command("scontrol -o show jobs -a"))
 	job_list = {}
 	if exit:
 		for key in exit:
-			if key["JobState"] == "RUNNING":
+			if key["JobState"] == "RUNNING" or key["JobState"] == "NODE_FAIL":
 				job_list [str(key["JobId"])] = str(key["BatchHost"])
 	return job_list
 
@@ -78,7 +78,7 @@ def check_ckpt_file(job_id):
 
 # Obtains the command used to launch the job, in order to relaunch it again
 def obtain_sbatch_command(job_id):
-	jobs = parse_scontrol(run_command("scontrol -o show jobs"))
+	jobs = parse_scontrol(run_command("scontrol -o show jobs -a"))
 	command = ""
 	if jobs:
 		for key in jobs:
@@ -152,15 +152,10 @@ def checkpoint_control(dic):
 								logging.debug("Success restarting the job from the checkpointing file.")
 							except CommandError:
 								logging.error("Command failed while restarting the job from the checkpointing file because SLURM do not know that the node is dead.")
+								
 							# Wait for SLURM detects the dead node
-							time.sleep(60)
-							
-							try:
-								run_command("scancel " + value)
-							except:
-								time.sleep(1)
-							#TODO: revisar porque hay que esperar tanto
-							time.sleep(220)
+							time.sleep(100)
+
 							try:
 								run_command("scontrol checkpoint restart " + value)
 								logging.debug("Success restarting the job from the checkpointing file.")
